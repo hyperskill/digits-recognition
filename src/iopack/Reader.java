@@ -1,30 +1,36 @@
 package iopack;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Reader {
 	String name;
-	byte[] storage;
+	private byte[] storage;
 	
-	Reader(String path) {
+	Reader(String path) throws IOException {
 		name = path;
-		try {
-			this.storage = Files.readAllBytes(Paths.get(path));
-		}catch(IOException e) {
-			System.out.println(e.getStackTrace());
-		}
+		Path pth = Paths.get(path);
+				if(Files.exists(pth)) {
+					this.storage = Files.readAllBytes(pth);
+				}
+				else {
+					throw new FileNotFoundException("Файл с именем \""+ name + "\" не найден." );
+				}
 	}
 	
-	Reader(String path, String name){
+	Reader(String path, String name) throws IOException{
+		this(path);
 		this.name = name;
-		try {
-			this.storage = Files.readAllBytes(Paths.get(path));
-		}catch(IOException e) {
-			System.out.println(e.getStackTrace());
-		}
 	}
+
+	public byte[] getStorage() {
+		return storage;
+	}
+
+	
 	
 	
 }
