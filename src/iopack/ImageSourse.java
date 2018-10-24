@@ -3,28 +3,33 @@ package iopack;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ImageSourse {
 	private int imgCount;
-	private int rowsCount;
-	private int colsCount;
+	private int cellsCount;
 	private byte[] pixels;
 	
+	private  static final Logger LOG = Logger.getLogger(ImageSourse.class.getName()) ;
+	
 	ImageSourse(String path) throws IOException {
+		
 		Reader file = new Reader(path);
+		int byteCount;
 		try(DataInputStream dist = new DataInputStream(new ByteArrayInputStream(file.getStorage()))) {
-				dist.readInt();
-				System.out.println(dist.readInt());
-				System.out.println(dist.readInt());
-				System.out.println(dist.readInt());
-				int r;
-				for(int i = 0; i<(28); i++) {
-					for (int j = 0; j<28;j++) {
-					System.out.print((r = dist.read())==0?"  ":r+" ");
-					}
-					System.out.println();
-				}
+				dist.skipBytes(4);
+				imgCount = dist.readInt();
 				
+				cellsCount = dist.readInt()*dist.readInt();
+				byteCount = imgCount*cellsCount;
+				LOG.log(Level.FINE, "\timgCount = {0}\n\tcellsCount = {1}\n\tbyteCount = {2}", new Object[] {imgCount, cellsCount, byteCount});
+				pixels = new byte[byteCount];
+				int res = dist.read(pixels);
+				LOG.log(Level.FINE, "read в массив вернуло {0}; размер массива {1} байт",new Object[] {res, pixels.length});
+				if (res!= byteCount) {
+					LOG.log(Level.WARNING,"Некорректно прочитаны данные из файла {0}\n\tКол-во прочитанных байтов = {1} из {2}",new Object[] {path,res,byteCount});
+				}
 		}
 	}
 	
