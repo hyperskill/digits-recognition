@@ -1,4 +1,4 @@
-package iopack;
+package digrec.iopack;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -10,8 +10,7 @@ public class ImageSourse {
 	private int imgCount;
 	private int cellsCount;
 	private byte[] pixels;
-	
-	private  static final Logger LOG = Logger.getLogger(ImageSourse.class.getName()) ;
+	//private  static final Logger LOG = Logger.getLogger("digrec");//(ImageSourse.class.getName()) ;
 	
 	ImageSourse(String path) throws IOException {
 		
@@ -23,12 +22,13 @@ public class ImageSourse {
 				
 				cellsCount = dist.readInt()*dist.readInt();
 				byteCount = imgCount*cellsCount;
-				LOG.log(Level.FINE, "\timgCount = {0}\n\tcellsCount = {1}\n\tbyteCount = {2}", new Object[] {imgCount, cellsCount, byteCount});
-				pixels = new byte[byteCount];
+				Test.LOG.log(Level.FINE, "\timgCount = {0}\n\tcellsCount = {1}\n\tbyteCount = {2}", new Object[] {imgCount, cellsCount, byteCount});
+				pixels = new byte[byteCount-10];
 				int res = dist.read(pixels);
-				LOG.log(Level.FINE, "read в массив вернуло {0}; размер массива {1} байт",new Object[] {res, pixels.length});
+				Test.LOG.log(Level.FINE, "read в массив вернуло {0}; размер массива {1} байт",new Object[] {res, pixels.length});
 				if (res!= byteCount) {
-					LOG.log(Level.WARNING,"Некорректно прочитаны данные из файла {0}\n\tКол-во прочитанных байтов = {1} из {2}",new Object[] {path,res,byteCount});
+					
+					Test.LOG.log(Level.WARNING,"Некорректно прочитаны данные из файла {0}\n\tКол-во прочитанных байтов = {1} из {2}",new Object[] {path,res,byteCount});
 				}
 		}
 	}
