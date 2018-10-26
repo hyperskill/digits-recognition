@@ -23,12 +23,12 @@ public class Test {
 	
 	
 	static void loggerConfig (Level lv) throws SecurityException, IOException {
-		//LogManager.getLogManager().addLogger(LOG);
+		//LogManager.getLogManager().addLogger(LOG); // doubling logs to a file
 		LogManager.getLogManager().readConfiguration(
                 Test.class.getResourceAsStream("/logging.properties"));
 		
 		LOG.setLevel(lv);
-		/*Handler h = new FileHandler( );
+		/*Handler h = new FileHandler( ); // doubling logs to a file
 		h.setFormatter(new SimpleFormatter());
 		h.setLevel(Level.ALL);
 		LOG.addHandler(h);*/

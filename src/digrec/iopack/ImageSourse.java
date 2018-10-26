@@ -23,7 +23,7 @@ public class ImageSourse {
 				cellsCount = dist.readInt()*dist.readInt();
 				byteCount = imgCount*cellsCount;
 				Test.LOG.log(Level.FINE, "\timgCount = {0}\n\tcellsCount = {1}\n\tbyteCount = {2}", new Object[] {imgCount, cellsCount, byteCount});
-				pixels = new byte[byteCount-10];
+				pixels = new byte[byteCount];
 				int res = dist.read(pixels);
 				Test.LOG.log(Level.FINE, "read в массив вернуло {0}; размер массива {1} байт",new Object[] {res, pixels.length});
 				if (res!= byteCount) {

@@ -15,7 +15,7 @@ public class Reader {
 		name = path;
 		Path pth = Paths.get(path);
 				if(Files.exists(pth)) {
-					Test.LOG.log(Level.FINE, "Файл найден");
+					Test.LOG.log(Level.FINEST, "Файл найден");
 					this.storage = Files.readAllBytes(pth);
 				}
 				else {
