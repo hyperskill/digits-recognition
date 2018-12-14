@@ -1,7 +1,10 @@
 package recognition;
+import recognition.simplestNeuron.ImagesManager;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.print("Hello world!");
+        while (true) {
+            new ImagesManager().selectEnteringMethod();
+        }
     }
 }
