@@ -1,17 +1,27 @@
 package recognition;
 
-public class GridRecognizer {
-    private int[][] weights = new int[][]{{2, 1, 2}, {4, -4, 4}, {2, -1, 2}};
-    private int bias = -5;
+import recognition.data.Network;
+import recognition.data.Neuron;
+import java.util.List;
 
-    public int recognize(Grid grid) {
-        int sum = 0;
-        for (byte row = 0; row < weights.length; row++) {
-            for (byte col = 0; col < weights[row].length; col++) {
-                sum += weights[row][col] * grid.getCell(row, col);
+public class GridRecognizer {
+    private Network network;
+
+    public void setNetwork(Network network) {
+        this.network = network;
+    }
+
+    public int recognize() {
+        network.evaluateOutput();
+        List<Neuron> neurons = network.getOutputLayer().getNeurons();
+        int max = 0;
+        int index = 0;
+        for (int i = 0; i < neurons.size(); i++) {
+            if (neurons.get(i).getValue() > max) {
+                max = neurons.get(i).getValue();
+                index = i;
             }
         }
-
-        return (sum + bias) < 0 ? 1 : 0;
+        return index;
     }
 }

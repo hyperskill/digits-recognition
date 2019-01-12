@@ -1,16 +1,20 @@
 package recognition;
 
+import recognition.data.Grid;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import static recognition.Helper.*;
 
 public class InputReader {
     public Grid read() throws IOException {
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             Grid grid = new Grid();
 
-            System.out.println("Input 3x3 grid");
-            for (byte row = 0; row < 3; row++) {
+            System.out.println("Input " + rowNum + "x" + colNum +" grid");
+            for (byte row = 0; row < rowNum; row++) {
                 String line = reader.readLine();
 
                 if (line.matches("^[\\w]{3}$")) {
