@@ -3,25 +3,25 @@ package recognition.data;
 import static recognition.Helper.*;
 
 public class Grid {
-    private byte[][] cells = new byte[rowNum][colNum];
+    private double[][] cells = new double[rowNum][colNum];
 
     public void setCell(byte row, byte col, byte value) {
         cells[row][col] = value;
     }
 
-    public byte getCell(byte row, byte col) {
+    public double getCell(byte row, byte col) {
         return cells[row][col];
     }
 
-    public byte[][] getCells() {
+    public double[][] getCells() {
         return cells;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (byte[] row : cells) {
-            for (byte cell : row) {
+        for (double[] row : cells) {
+            for (double cell : row) {
                 builder.append(cell);
             }
             builder.append("\n");

@@ -30,7 +30,7 @@ public class Network {
         List<Neuron> neurons = outputLayer.getNeurons();
         for (int i = 0; i < neurons.size(); i++) {
             int value = calculateValue(inputLayer.getNeurons(), outputLayer.getWeights().get(i));
-            neurons.get(i).setValue(value - bias[i]);
+            //neurons.get(i).setValue(value - bias[i]);
         }
     }
 
