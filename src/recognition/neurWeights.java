@@ -3,24 +3,18 @@ package recognition;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class neurWeights implements Serializable {
-    private double[][][] neur = newNeur(0.5);
+class neurWeights implements Serializable {
+    private layer[] layers;
 
-
-
-    public double[][][] getNeur() {
-        return neur;
-    }
-
-    public double[][] getMas(double d){
-        double[][] mas = new double[5][3];
-        for (double[] a : mas){
-            Arrays.fill(a, d);
+    neurWeights(int[] layers){
+        this.layers = new layer[layers.length];
+        for (int i = 0; i < layers.length; i++){
+            this.layers[i] = new layer(layers[i], (i == 0)? 0 : layers[i - 1]);
         }
-        return mas;
     }
-    private double[][][] newNeur(double d){
-        return new double[][][]{getMas(d),getMas(d),getMas(d),getMas(d),getMas(d),getMas(d),getMas(d),getMas(d),getMas(d),getMas(d)};
+
+    public layer[] getLayers() {
+        return layers;
     }
 }
 
