@@ -29,11 +29,14 @@ public class Test {
 		//System.out.println(Arrays.toString(outNeurons));
 		//System.out.println("It's a \"" + digit + "\".");
 		Weights wts = new Weights();
-		wts.saveToF();
-		wts.loadFromF();
+		//wts.saveToF();
+		//wts.loadFromF();
 		
 		System.out.println(Arrays.deepToString(wts.weights));
-
+		for(int i = 0;i<100;i++) {
+		wts.learnNeuNet();
+		System.out.println(Arrays.deepToString(wts.weights));
+		}
 	}
 	
 	int takeDigit(int[] inNeurons) {
