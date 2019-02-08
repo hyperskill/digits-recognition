@@ -35,26 +35,12 @@ public class Test {
 		System.out.println(Arrays.deepToString(wts.weights));
 		for(int i = 0;i<100;i++) {
 		wts.learnNeuNet();
-		System.out.println(Arrays.deepToString(wts.weights));
+		
 		}
+		System.out.println(Arrays.deepToString(wts.weights));
+		
+		System.out.println(wts.takeDigit(new int[]{1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1}));
 	}
 	
-	int takeDigit(int[] inNeurons) {
-		int digit = 0;
-		double [] outNeurons = new double[10];
-		double bestRes = -1.0;
-		double[][] nWeights = new double[10][16];
-		 
-		for (int i=0;i<10;i++) {
-			for (int j = 0; j<16;j++){
-				outNeurons[i]+= inNeurons[j]*nWeights[i][j];
-			}
-			
-			if(outNeurons[i]>bestRes) {
-				bestRes = outNeurons[i];
-				digit = i;
-			}
-		}
-		return digit;
-	}
+	
 }

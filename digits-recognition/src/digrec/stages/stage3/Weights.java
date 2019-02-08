@@ -18,7 +18,7 @@ public class Weights implements Serializable {
 	public Weights() {
 		Random rd = new Random(328778L);
 		for (int i=0;i<10;i++) {
-			for (int j = 0; j<16;j++){
+			for (int j = 0; j<15;j++){
 				weights[i][j]= rd.nextGaussian();
 			}
 		}
@@ -80,22 +80,25 @@ public class Weights implements Serializable {
 		double [][] deltaW = new double[10][16];
 		
 		double outNeuron = 0;
-		for (int iin = 0;iin<10;iin++)	{
+		for(int n = 0;n<10;n++) {
 			for (int i=0;i<10;i++) {
 				for (int j = 0; j<16;j++){
-					outNeuron+= idealInputNeurones[iin][j]*weights[i][j];
+					outNeuron+= idealInputNeurones[n][j]*weights[i][j];
 				}
 				outNeuron = sigmoid(outNeuron);	
-				outNeuron = (i==iin?1:0)- outNeuron;
+				outNeuron = (i==n?1:0)- outNeuron;
 				for (int k = 0; k<16;k++){
-					deltaW[i][k] += nju*idealInputNeurones[iin][k]*outNeuron;
+					deltaW[i][k] += nju*idealInputNeurones[n][k]*outNeuron;
 				}
 				outNeuron = 0;
 			}
 		}
-		for (int iin = 0;iin<10;iin++)	{
+			
+			
+			
+		for (int v = 0;v<10;v++)	{
 			for (int k = 0; k<16;k++){
-				this.weights[iin][k]+= deltaW[iin][k] *0.1;
+				this.weights[v][k]+= deltaW[v][k] *0.1;
 			}
 		}
 	}
@@ -104,6 +107,27 @@ public class Weights implements Serializable {
 		
 		return 1/(1+ Math.pow(Math.E, weight));
 		
+	}
+	
+	public int takeDigit(int[] inNeurons) {
+		int digit = -1;
+		double [] outNeurons = new double[10];
+		double bestRes = -1000.0;
+		
+		for (int i=0;i<10;i++) {
+			for (int j = 0; j<16;j++){
+				outNeurons[i]+= inNeurons[j]*weights[i][j];
+				
+			}
+			
+			if(outNeurons[i]>bestRes) {
+				bestRes = outNeurons[i];
+				digit = i;
+				
+			}
+			System.out.println(	outNeurons[i]);
+		}
+		return digit;
 	}
 	
 }
