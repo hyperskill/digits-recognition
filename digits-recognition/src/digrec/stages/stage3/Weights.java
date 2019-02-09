@@ -1,7 +1,7 @@
 package digrec.stages.stage3;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,48 +18,44 @@ public class Weights implements Serializable {
 	public Weights() {
 		Random rd = new Random(328778L);
 		for (int i=0;i<10;i++) {
-			for (int j = 0; j<15;j++){
+			for (int j = 0; j<16;j++){
 				weights[i][j]= rd.nextGaussian();
 			}
 		}
+		
 		
 	}
 
 	public double[][] getWeights() {
 		double[][] wts = new double [10][16];
-		System.arraycopy(wts, 0, weights, 0, wts.length); 
+		System.arraycopy(weights, 0, wts, 0, wts.length); 
 		return wts;
 	}
 
 	public void setWeights(double[][] weights) {
-		System.arraycopy(this.weights, 0, weights, 0, this.weights.length); 
+		System.arraycopy(weights, 0, this.weights, 0, this.weights.length); 
 	}
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw.txt"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw.bin"))) {
 			out.writeObject(this);
-			out.flush();
-			out.close();
-			System.out.println("Saved successfully to nnw.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+	   // System.out.println("Saved successfully.");
 	}
 	
 	public void loadFromF() {
-		
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw.txt"))) {
-			Weights twts = (Weights) in.readObject();
-			in.close();
-			this.setWeights(twts.getWeights());
-			System.out.println("Loaded successfully.");
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw.bin"))) {
+			//Weights twts = (Weights) in.readObject();
+			this.setWeights(((Weights)in.readObject()).getWeights());
+			//in.close();
+			
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
 		}
-		
+		//System.out.println("Loaded successfully.");
 	}
 	
 	public void learnNeuNet() {
@@ -78,10 +74,11 @@ public class Weights implements Serializable {
 			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
 			};
 		double [][] deltaW = new double[10][16];
+		double outNeuron;
 		
-		double outNeuron = 0;
-		for(int n = 0;n<10;n++) {
+		for(int n =0;n<10;n++) {
 			for (int i=0;i<10;i++) {
+				outNeuron = 0;
 				for (int j = 0; j<16;j++){
 					outNeuron+= idealInputNeurones[n][j]*weights[i][j];
 				}
@@ -90,11 +87,9 @@ public class Weights implements Serializable {
 				for (int k = 0; k<16;k++){
 					deltaW[i][k] += nju*idealInputNeurones[n][k]*outNeuron;
 				}
-				outNeuron = 0;
 			}
-		}
-			
-			
+		
+		}	
 			
 		for (int v = 0;v<10;v++)	{
 			for (int k = 0; k<16;k++){
@@ -104,30 +99,54 @@ public class Weights implements Serializable {
 	}
 	
 	private double sigmoid(double weight) {
-		
-		return 1/(1+ Math.pow(Math.E, weight));
-		
+		return 1/(1+ Math.pow(Math.E, -weight));
 	}
 	
 	public int takeDigit(int[] inNeurons) {
 		int digit = -1;
 		double [] outNeurons = new double[10];
 		double bestRes = -1000.0;
-		
 		for (int i=0;i<10;i++) {
 			for (int j = 0; j<16;j++){
 				outNeurons[i]+= inNeurons[j]*weights[i][j];
-				
 			}
-			
+			outNeurons[i] = sigmoid(outNeurons[i]);
 			if(outNeurons[i]>bestRes) {
 				bestRes = outNeurons[i];
 				digit = i;
-				
 			}
-			System.out.println(	outNeurons[i]);
 		}
 		return digit;
 	}
 	
+	public void selfLearning () {
+		System.out.println("Learning...");
+		System.out.println(Arrays.deepToString(weights));
+		for(int i = 0;i<50;i++) {
+			double[][] oldWts = new double[10][16];
+			System.arraycopy(weights, 0, oldWts, 0, oldWts.length);
+			learnNeuNet();
+			double dif;
+			double max = 0;
+			for (int v = 0;v<10;v++)	{
+				for (int k = 0; k<16;k++){
+					 dif= Math.abs(weights[v][k] - oldWts[v][k]);
+					 if(dif>max) max = dif;
+				}
+			}
+			
+			
+			if(max<=0.02) {
+				System.out.println("Done "+ i +" iteration.");
+				break;		
+			}
+		}
+		saveToF();
+		
+		
+		System.out.println("Done.");
+	}
+
 }
+
+
