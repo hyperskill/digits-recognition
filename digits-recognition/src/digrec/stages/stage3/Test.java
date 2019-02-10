@@ -1,6 +1,5 @@
 package digrec.stages.stage3;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Test {
@@ -8,7 +7,7 @@ public class Test {
 	
 	public static void main(String[] args) {
 		
-		int [][] idealInputNeurones = {
+		/*int [][] idealInputNeurones = {
 				{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1}, //0
 				{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1}, //1
 				{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1}, //2
@@ -20,7 +19,7 @@ public class Test {
 				{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1}, //8
 				{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
 				};
-		
+		*/
 		Weights wts = new Weights();
 		
 		
@@ -34,29 +33,22 @@ public class Test {
 			wts.selfLearning(); 
 			break;
 		case 2:
-			/*System.out.println("Enter matrix 3x5, where 1 is blue and 0 is white:");
+			System.out.println("Enter matrix 3x5, where 1 is blue and 0 is white:");
 			int[] inNeurons = new int [16];
 			for (int i=0;i<15;i++) {
 			inNeurons[i]= sc.nextInt();
 			}
 			sc.close();
-			inNeurons[15]= 1;*/
+			inNeurons[15]= 1;
 			wts.loadFromF();
 			
-			//System.out.println("It's a \"" + wts.takeDigit(inNeurons) + "\".");
-			for(int u = 0; u<10;u++) {
+			System.out.println("It's a \"" + wts.takeDigit(inNeurons) + "\".");
+			/*for(int u = 0; u<10;u++) {
 			System.out.println("It's a \"" + wts.takeDigit(idealInputNeurones[u]) + "\".");
-			}
-			System.out.println("It's a \"" + wts.takeDigit(new int[] {1,1,1,1,0,0,1,0,1,1,0,1,1,1,1,1}) + "\".");
-			
+			}*/
+			break;
+		default:
+			System.out.println("Unknown comand.");
 		}
-		
-		
-		
-		
-	
-		
 	}
-	
-	
 }

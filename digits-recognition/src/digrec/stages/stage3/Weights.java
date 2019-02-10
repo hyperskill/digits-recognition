@@ -28,12 +28,16 @@ public class Weights implements Serializable {
 
 	public double[][] getWeights() {
 		double[][] wts = new double [10][16];
-		System.arraycopy(weights, 0, wts, 0, wts.length); 
+		for(int i = 0;i<10;i++) {
+			wts[i] = weights[i].clone();
+		}
 		return wts;
 	}
 
 	public void setWeights(double[][] weights) {
-		System.arraycopy(weights, 0, this.weights, 0, this.weights.length); 
+		for(int i = 0;i<10;i++) {
+			this.weights[i] = weights[i].clone();
+		}
 	}
 	
 	public void saveToF() {
@@ -48,10 +52,8 @@ public class Weights implements Serializable {
 	
 	public void loadFromF() {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw.bin"))) {
-			//Weights twts = (Weights) in.readObject();
 			this.setWeights(((Weights)in.readObject()).getWeights());
-			//in.close();
-			
+						
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
 		}
@@ -121,10 +123,12 @@ public class Weights implements Serializable {
 	
 	public void selfLearning () {
 		System.out.println("Learning...");
-		System.out.println(Arrays.deepToString(weights));
-		for(int i = 0;i<50;i++) {
+		for(int i = 0;i<100;i++) {
 			double[][] oldWts = new double[10][16];
-			System.arraycopy(weights, 0, oldWts, 0, oldWts.length);
+			for(int j = 0;j<10;j++) {
+				oldWts[j] = weights[j].clone();
+			}
+			
 			learnNeuNet();
 			double dif;
 			double max = 0;
@@ -135,16 +139,13 @@ public class Weights implements Serializable {
 				}
 			}
 			
-			
 			if(max<=0.02) {
 				System.out.println("Done "+ i +" iteration.");
 				break;		
 			}
 		}
 		saveToF();
-		
-		
-		System.out.println("Done.");
+		System.out.println("Saved to a file.");
 	}
 
 }
