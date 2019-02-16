@@ -1,5 +1,5 @@
-# Digits Recognition
+# Digit Recognition
 
-Project: Digits Recognition
+Project: Digit Recognition
 
-Started in September 2018
+Go to the *src* directory, change *Main.java* and put your *.java* file(s) in it.
