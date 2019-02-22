@@ -9,6 +9,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Random;
 
+/**
+ * @version 4.2
+ *
+ */
 public class NeuronNet implements Serializable {
 
 	private static final long serialVersionUID = 328778L;
@@ -17,11 +21,14 @@ public class NeuronNet implements Serializable {
 	private double [][][] weights;
 	
 	public NeuronNet() {
-		LAYERS = 2;
 		NEURONS_IN_LAYERS = new int[]{15,10};
+		LAYERS = NEURONS_IN_LAYERS.length;
+		weights = new double [LAYERS-1][][];
 		Random rd = new Random(328778L);
 		for (int l=0;l<(LAYERS-1);l++) {
+			weights[l] = new double[NEURONS_IN_LAYERS[l]][];
 			for (int i=0;i<NEURONS_IN_LAYERS[l];i++) {
+				weights[l][i] = new double[NEURONS_IN_LAYERS[l+1]];
 				for (int j = 0; j<NEURONS_IN_LAYERS[l+1];j++){
 					weights[l][i][j]= rd.nextGaussian();
 				}
@@ -33,9 +40,12 @@ public class NeuronNet implements Serializable {
 	public NeuronNet(int... neuronsInLayers) {
 		LAYERS = neuronsInLayers.length;
 		NEURONS_IN_LAYERS = neuronsInLayers.clone();
+		weights = new double [LAYERS-1][][];
 		Random rd = new Random(328778L);
 		for (int l=0;l<(LAYERS-1);l++) {
+			weights[l] = new double[NEURONS_IN_LAYERS[l]][];
 			for (int i=0;i<NEURONS_IN_LAYERS[l];i++) {
+				weights[l][i] = new double[NEURONS_IN_LAYERS[l+1]];
 				for (int j = 0; j<NEURONS_IN_LAYERS[l+1];j++){
 					weights[l][i][j]= rd.nextGaussian();
 				}
@@ -43,11 +53,16 @@ public class NeuronNet implements Serializable {
 		}
 	}
 
+	
+	/**
+	 * @return	double [][][] new array, don't return reference
+	 */
 	public double[][][] getWeights() {
 		double[][][] wts = new double [LAYERS-1][][];
 		int l;
 		for(int i = 0;i<LAYERS-1;i++) {
 			l = weights[i].length;
+			wts[i] = weights[i].clone();
 			for(int j = 0;j<l;j++) {
 				wts[i][j] = weights[i][j].clone();
 			}
@@ -55,10 +70,15 @@ public class NeuronNet implements Serializable {
 		return wts;
 	}
 
+	/**
+	 *	Method don't change the array passed as an argument.
+	 * @param weights double [][][] array isn't changing in method 
+	 */
 	public void setWeights(double[][][] weights) {
 		int l;
 		for(int i = 0;i<LAYERS-1;i++) {
 			l = weights[i].length;
+			this.weights[i]= weights[i].clone();
 			for(int j = 0;j<l;j++) {
 				this.weights[i][j] = weights[i][j].clone();
 			}
@@ -85,6 +105,7 @@ public class NeuronNet implements Serializable {
 		//System.out.println("Loaded successfully.");
 	}
 	
+	
 	public void learnNeuronNet() {
 		final double nju = 0.5;
 		
@@ -107,7 +128,7 @@ public class NeuronNet implements Serializable {
 			for (int i=0;i<10;i++) {
 				outNeuron = 0;
 				for (int j = 0; j<16;j++){
-					outNeuron+= idealInputNeurones[n][j]*weights[i][j];
+					//outNeuron+= idealInputNeurones[n][j]*weights[i][j];
 				}
 				outNeuron = sigmoid(outNeuron);	
 				outNeuron = (i==n?1:0)- outNeuron;
@@ -120,7 +141,7 @@ public class NeuronNet implements Serializable {
 			
 		for (int v = 0;v<10;v++)	{
 			for (int k = 0; k<16;k++){
-				this.weights[v][k]+= deltaW[v][k] *0.1;
+				//this.weights[v][k]+= deltaW[v][k] *0.1;
 			}
 		}
 	}
@@ -135,7 +156,7 @@ public class NeuronNet implements Serializable {
 		double bestRes = -1000.0;
 		for (int i=0;i<10;i++) {
 			for (int j = 0; j<16;j++){
-				outNeurons[i]+= inNeurons[j]*weights[i][j];
+				//outNeurons[i]+= inNeurons[j]*weights[i][j];
 			}
 			outNeurons[i] = sigmoid(outNeurons[i]);
 			if(outNeurons[i]>bestRes) {
@@ -151,7 +172,7 @@ public class NeuronNet implements Serializable {
 		for(int i = 0;i<100;i++) {
 			double[][] oldWts = new double[10][16];
 			for(int j = 0;j<10;j++) {
-				oldWts[j] = weights[j].clone();
+				//oldWts[j] = weights[j].clone();
 			}
 			
 			learnNeuronNet();
@@ -159,8 +180,8 @@ public class NeuronNet implements Serializable {
 			double max = 0;
 			for (int v = 0;v<10;v++)	{
 				for (int k = 0; k<16;k++){
-					 dif= Math.abs(weights[v][k] - oldWts[v][k]);
-					 if(dif>max) max = dif;
+					// dif= Math.abs(weights[v][k] - oldWts[v][k]);
+					// if(dif>max) max = dif;
 				}
 			}
 			
