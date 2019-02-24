@@ -4,6 +4,7 @@ package digrec.tests;
 
 import java.util.Arrays;
 import java.util.Random;
+import digrec.stages.stage4.MatrixMath;
 
 public class Test  {
 	final int LAYERS;
@@ -14,27 +15,30 @@ public class Test  {
 		/*double [][] arr1 = {{0.0,0.1,0.2},{1.0,1.1,1.2}};
 		double [][] arr2;
 		arr2 = Sigmoid(arr1);
-	    
-		double [][][] arr3 = {{{0.0,0.1,0.2,0.3},{1.0,1.1,1.2}},
-							{{0.0,0.1,0.2},{2.0,2.1,2.2}}};
+	    					{{0.0,0.1,0.2},{2.0,2.1,2.2}}};
 		*/
-		Test test1 = new Test(1,2,3);
+		double [][][] arr3 = {{{1.2,6.1,6.2,6.3},{1.0,1.1,1.2,1.0}},{{5.0,5.1},{1.0,1.1},{1.0,1.1}}};
+		double [][] arr2 = MatrixMath.Transpose(arr3[0]);
+		double [][][] arr4 = MatrixMath.DerivativeOfSigmoid(arr3);
+		System.out.println(Arrays.deepToString(arr2));
+		double i = Double.NaN;
+		/*
+		Test test1 = new Test(2,3);
 		System.out.println(Arrays.deepToString(test1.weights));
 		System.out.println();
-		double [][][] arr4 = test1.getWeights();
-		double [][][] arr3 = {{{0.0,0.1,0.2,0.3},{1.0,1.1,1.2}},
-				{{0.0,0.1,0.2},{2.0,2.1,2.2}}};
-		test1.setWeights(arr3);
+		double [][] arr4 = MatrixMath.Transpose(test1.weights[0]);
+		double [] vec = MatrixMath.Add(new double[] {2,2}, new double[][] {{0,2},{2,0},{2,2}});
+		
 	    
 	   
 	    //System.out.println(Arrays.deepToString(arr3));
-	    System.out.println(Arrays.deepToString(arr4));
+	    
 	
 
-		
+	    System.out.println();
 		//Test test1 = new Test(1,2,3);
-		System.out.println(Arrays.deepToString(test1.weights));
-		
+		System.out.println(Arrays.toString(vec));
+		*/
 	}
 	
 	public Test(int... neuronsInLayers) {

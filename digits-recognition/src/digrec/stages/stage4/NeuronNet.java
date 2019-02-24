@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Random;
 
 /**
- * @version 4.2
+ * @version 4.3
  *
  */
 public class NeuronNet implements Serializable {
