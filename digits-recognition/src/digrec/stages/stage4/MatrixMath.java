@@ -6,7 +6,7 @@ package digrec.stages.stage4;
  */
 public final class MatrixMath {
 
-	
+//TODO My be make another name about weighted sum...	
 	public static double [] Add (double [] vec, double [][] matrix) {
 		if(vec.length!=matrix[0].length) {
 			throw new IllegalArgumentException("Illegal length of vector");
