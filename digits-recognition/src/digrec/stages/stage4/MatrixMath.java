@@ -21,6 +21,21 @@ public final class MatrixMath {
 		
 	}
 	
+	public static double [] ActivateNeuron (double [] vec, double [][] matrix) {
+		if(vec.length!=matrix[0].length) {
+			throw new IllegalArgumentException("Illegal length of vector");
+		}
+		double [] resVec = new double [matrix.length];
+		for (int i=0;i<matrix.length;i++) {
+			for (int j = 0; j<matrix[0].length;j++){
+				resVec[i]+= vec[j]*matrix[i][j];
+			}
+			resVec[i] = Sigmoid(resVec[i]);
+		}
+		return resVec;
+		
+	}
+	
 	/**
 	 * @param matrix double must be rectangle
 	 * @return new rectangle matrix, don't touch source matrix
@@ -42,6 +57,15 @@ public final class MatrixMath {
 	
 		return 1/(1+ Math.pow(Math.E, -x));
 	}
+	
+	/*public static double [] Sigmoid (double [] vector) {
+		int vectorLength = vector.length;
+		double[] sVector = new double[vectorLength];
+		for(int i = 0;i<vectorLength;i++) {
+			sVector[i] = Sigmoid(vector[i]);
+		}
+		return sVector;
+	}*/
 	
 	public static double [][] Sigmoid (double [][] matrix) {
 		double[][] sMatrix = new double[matrix.length][];

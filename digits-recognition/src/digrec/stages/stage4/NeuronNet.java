@@ -107,9 +107,9 @@ public class NeuronNet implements Serializable {
 	
 	
 	public void learnNeuronNet() {
-		final double nju = 0.5;
+		final double eta = 0.5;
 		
-		int [][] idealInputNeurones = {
+		double [][] idealInputNeurones = {
 			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1}, //0
 			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1}, //1
 			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1}, //2
@@ -121,21 +121,21 @@ public class NeuronNet implements Serializable {
 			{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1}, //8
 			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
 			};
+		
+		double [][] neurons = new double [LAYERS-1][]; // non-rectangle matrix!
+		
 		double [][] deltaW = new double[10][16];
 		double outNeuron;
+		int iInLength = idealInputNeurones.length;
 		
-		for(int n =0;n<10;n++) {
-			for (int i=0;i<10;i++) {
-				outNeuron = 0;
-				for (int j = 0; j<16;j++){
-					//outNeuron+= idealInputNeurones[n][j]*weights[i][j];
-				}
-				outNeuron = sigmoid(outNeuron);	
-				outNeuron = (i==n?1:0)- outNeuron;
-				for (int k = 0; k<16;k++){
-					deltaW[i][k] += nju*idealInputNeurones[n][k]*outNeuron;
-				}
+		for(int n =0;n<iInLength;n++) {
+			neurons[0] = idealInputNeurones[n].clone();
+			
+			for (int l=1;l<LAYERS;l++) { //layer
+				neurons[l] = new double [NEURONS_IN_LAYERS[l]];
+				neurons[l] = MatrixMath.ActivateNeuron(neurons[l-1], weights[l-1]);
 			}
+			//TODO обратный проход
 		
 		}	
 			
