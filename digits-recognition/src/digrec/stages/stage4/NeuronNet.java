@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -19,6 +20,21 @@ public class NeuronNet implements Serializable {
 	private final int LAYERS;
 	private final int [] NEURONS_IN_LAYERS;
 	private double [][][] weights;
+	//double [][] neurons; 		// non-rectangle matrix!
+	public double [][] idealNeurons; 	// non-rectangle matrix!
+	
+	double [][] idealInputNeurones = {
+			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1}, //0
+			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1}, //1
+			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1}, //2
+			{1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1}, //3
+			{1,0,1,1,0,1,1,1,1,0,0,1,0,0,1,1}, //4
+			{1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1}, //5
+			{1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,1}, //6
+			{1,1,1,0,0,1,0,0,1,0,0,1,0,0,1,1}, //7
+			{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1}, //8
+			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
+			};
 	
 	public NeuronNet() {
 		NEURONS_IN_LAYERS = new int[]{15,10};
@@ -43,10 +59,10 @@ public class NeuronNet implements Serializable {
 		weights = new double [LAYERS-1][][];
 		Random rd = new Random(328778L);
 		for (int l=0;l<(LAYERS-1);l++) {
-			weights[l] = new double[NEURONS_IN_LAYERS[l]][];
-			for (int i=0;i<NEURONS_IN_LAYERS[l];i++) {
-				weights[l][i] = new double[NEURONS_IN_LAYERS[l+1]];
-				for (int j = 0; j<NEURONS_IN_LAYERS[l+1];j++){
+			weights[l] = new double[NEURONS_IN_LAYERS[l+1]][];
+			for (int i=0;i<NEURONS_IN_LAYERS[l+1];i++) {
+				weights[l][i] = new double[NEURONS_IN_LAYERS[l]];
+				for (int j = 0; j<NEURONS_IN_LAYERS[l];j++){
 					weights[l][i][j]= rd.nextGaussian();
 				}
 			}
@@ -109,48 +125,79 @@ public class NeuronNet implements Serializable {
 	public void learnNeuronNet() {
 		final double eta = 0.5;
 		
-		double [][] idealInputNeurones = {
-			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1}, //0
-			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1}, //1
-			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1}, //2
-			{1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1}, //3
-			{1,0,1,1,0,1,1,1,1,0,0,1,0,0,1,1}, //4
-			{1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1}, //5
-			{1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,1}, //6
-			{1,1,1,0,0,1,0,0,1,0,0,1,0,0,1,1}, //7
-			{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1}, //8
-			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
-			};
+		double [][] neurons = new double[2][]; 		
 		
-		double [][] neurons = new double [LAYERS-1][]; // non-rectangle matrix!
 		
-		double [][] deltaW = new double[10][16];
-		double outNeuron;
 		int iInLength = idealInputNeurones.length;
 		
+		CountIdealNeurons();
+		
+		
 		for(int n =0;n<iInLength;n++) {
-			neurons[0] = idealInputNeurones[n].clone();
+			neurons[1] = idealInputNeurones[n].clone();
 			
-			for (int l=1;l<LAYERS;l++) { //layer
-				neurons[l] = new double [NEURONS_IN_LAYERS[l]];
-				neurons[l] = MatrixMath.ActivateNeuron(neurons[l-1], weights[l-1]);
+			for (int l=1;l<LAYERS;l++) { 		//layer
+				neurons[0] = neurons[1].clone();
+				neurons[1] = new double [NEURONS_IN_LAYERS[l]];
+				neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l-1]);
+				
 			}
-			//TODO обратный проход
+			
 		
 		}	
 			
-		for (int v = 0;v<10;v++)	{
-			for (int k = 0; k<16;k++){
-				//this.weights[v][k]+= deltaW[v][k] *0.1;
-			}
+		
+	}
+	
+	
+	public void CountIdealNeurons() {
+		double [][] weightsT;
+		double idealNeuron;
+		idealNeurons = new double [LAYERS][]; 	// non-rectangle matrix!
+		for (int l=0;l<LAYERS;l++) { 		//layer
+			idealNeurons[l] = new double [NEURONS_IN_LAYERS[l]];
 		}
+		int iCount;
+		int jCount;
+		int iInLength = idealInputNeurones.length;
+		
+		
+		
+		for(int n =0;n<iInLength;n++) {
+			for(int ln = 0;ln<NEURONS_IN_LAYERS[LAYERS-1];ln++) {
+				idealNeurons[LAYERS-1][ln] = (ln==n)?1:0;
+			}
+			//System.out.println(Arrays.deepToString(idealNeurons));
+			for(int l = LAYERS-2;l>0;l--) {
+				weightsT= MatrixMath.Transpose(weights[l]);
+				//System.out.println(Arrays.deepToString(weights[l]));
+				//System.out.println(Arrays.deepToString(weightsT));
+				for (int i=0;i<NEURONS_IN_LAYERS[l];i++) {
+					idealNeuron = 0;
+						for (int j = 0; j<NEURONS_IN_LAYERS[l+1];j++){
+							idealNeuron += idealNeurons[l+1][j]/weightsT[i][j];
+						}
+					
+						//System.out.print(idealNeuron+"  ");	
+					idealNeuron = MatrixMath.Sigmoid(idealNeuron);
+					idealNeurons[l][i] += idealNeuron;
+				}
+				//System.out.println();
+			}
+			for(int k = 0; k<LAYERS-2; k++) {
+				for(int m = 0; m<idealNeurons[k].length; m++) {
+					idealNeurons[k][m] = idealNeurons[k][m]/n;
+				}
+			}
+			
+			
+		}
+		
 	}
+
+
 	
-	private double sigmoid(double weight) {
-		return 1/(1+ Math.pow(Math.E, -weight));
-	}
-	
-	public int takeDigit(int[] inNeurons) {
+/*public int takeDigit(int[] inNeurons) {
 		int digit = -1;
 		double [] outNeurons = new double[10];
 		double bestRes = -1000.0;
@@ -166,7 +213,7 @@ public class NeuronNet implements Serializable {
 		}
 		return digit;
 	}
-	
+	*/
 	public void selfLearning () {
 		System.out.println("Learning...");
 		for(int i = 0;i<100;i++) {

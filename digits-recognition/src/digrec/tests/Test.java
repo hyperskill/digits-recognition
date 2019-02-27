@@ -5,6 +5,7 @@ package digrec.tests;
 import java.util.Arrays;
 import java.util.Random;
 import digrec.stages.stage4.MatrixMath;
+import digrec.stages.stage4.NeuronNet;
 
 public class Test  {
 	final int LAYERS;
@@ -17,11 +18,18 @@ public class Test  {
 		arr2 = Sigmoid(arr1);
 	    					{{0.0,0.1,0.2},{2.0,2.1,2.2}}};
 		*/
-		double [][][] arr3 = {{{1.2,6.1,6.2,6.3},{1.0,1.1,1.2,1.0}},{{5.0,5.1},{1.0,1.1},{1.0,1.1}}};
+		
+		
+		/*double [][][] arr3 = {{{1.2,6.1,6.2,6.3},{1.0,1.1,1.2,1.0}},{{5.0,5.1},{1.0,1.1},{1.0,1.1}}};
 		double [][] arr2 = MatrixMath.Transpose(arr3[0]);
 		double [][][] arr4 = MatrixMath.DerivativeOfSigmoid(arr3);
 		System.out.println(Arrays.deepToString(arr2));
 		double i = Double.NaN;
+		*/
+		NeuronNet nn = new NeuronNet(4,3,3,10);
+		
+		nn.CountIdealNeurons();
+		System.out.println(Arrays.deepToString(nn.idealNeurons));
 		/*
 		Test test1 = new Test(2,3);
 		System.out.println(Arrays.deepToString(test1.weights));
