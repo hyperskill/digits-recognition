@@ -26,10 +26,18 @@ public class Test  {
 		System.out.println(Arrays.deepToString(arr2));
 		double i = Double.NaN;
 		*/
-		NeuronNet nn = new NeuronNet(4,3,3,10);
+		//double n = 10000;
+		Timer timer =  new Timer();
+		long time = 0;
+		//for(int i = 0; i<n; i++) {
+			time += timer.meTime(new Func());
+		//}
+		//System.out.println(time);
 		
-		nn.CountIdealNeurons();
-		System.out.println(Arrays.deepToString(nn.idealNeurons));
+		//nn.selfLearning ();
+		/*String a = Arrays.deepToString(nn.idealNeurons);
+		a = a.replace("],", "]\n");
+		System.out.println(a);*/
 		/*
 		Test test1 = new Test(2,3);
 		System.out.println(Arrays.deepToString(test1.weights));
@@ -110,4 +118,24 @@ public class Test  {
 	}
 	
 
+}
+
+class Func implements Runnable {
+
+	@Override
+	public void run() {
+		NeuronNet nn = new NeuronNet(15,3,4,10);
+		nn.CountIdealNeurons();
+		nn.learnNeuronNet();
+		nn.printArray(nn.idealNeurons);
+	}
+	
+}
+
+class Timer{
+	public long meTime(Runnable run) {
+		long start = System.currentTimeMillis();
+		run.run();
+		return System.currentTimeMillis()-start;
+	}
 }

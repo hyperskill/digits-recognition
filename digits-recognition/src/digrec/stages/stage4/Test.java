@@ -19,7 +19,7 @@ public class Test {
 			break;
 		case 2:
 			System.out.println("Enter matrix 3x5, where 1 is blue and 0 is white:");
-			int[] inNeurons = new int [16];
+			double[] inNeurons = new double [16];
 			for (int i=0;i<15;i++) {
 			inNeurons[i]= sc.nextInt();
 			}
