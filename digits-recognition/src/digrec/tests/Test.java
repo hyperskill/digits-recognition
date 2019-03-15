@@ -32,7 +32,7 @@ public class Test  {
 		//for(int i = 0; i<n; i++) {
 			time += timer.meTime(new Func());
 		//}
-		//System.out.println(time);
+		System.out.println(time);
 		
 		//nn.selfLearning ();
 		/*String a = Arrays.deepToString(nn.idealNeurons);
@@ -125,9 +125,10 @@ class Func implements Runnable {
 	@Override
 	public void run() {
 		NeuronNet nn = new NeuronNet(15,3,4,10);
-		nn.CountIdealNeurons();
-		nn.learnNeuronNet();
-		nn.printArray(nn.idealNeurons);
+		//nn.CountIdealNeurons();
+		//nn.learnNeuronNet();
+		nn.selfLearning(100);
+		nn.printArray(nn.getWeights());
 	}
 	
 }

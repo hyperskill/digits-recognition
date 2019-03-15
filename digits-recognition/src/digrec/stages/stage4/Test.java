@@ -15,7 +15,7 @@ public class Test {
 		switch (sc.nextInt()) {
 		case 1:
 			sc.close();
-			wts.selfLearning(); 
+			wts.selfLearning(100); 
 			break;
 		case 2:
 			System.out.println("Enter matrix 3x5, where 1 is blue and 0 is white:");
