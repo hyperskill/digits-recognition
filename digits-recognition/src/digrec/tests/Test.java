@@ -127,8 +127,13 @@ class Func implements Runnable {
 		NeuronNet nn = new NeuronNet(15,3,4,10);
 		//nn.CountIdealNeurons();
 		//nn.learnNeuronNet();
-		nn.selfLearning(100);
-		nn.printArray(nn.getWeights());
+		nn.selfLearning(162);
+		//nn.printArray(nn.getWeights());
+		nn.loadFromF();
+		for(int u = 0; u<10;u++) {
+		System.out.println("It's a \"" + nn.takeDigit(nn.idealInputNeurones[u]) + "\".");
+		}
+		
 	}
 	
 }

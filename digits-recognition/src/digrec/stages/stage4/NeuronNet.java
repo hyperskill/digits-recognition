@@ -22,7 +22,7 @@ public class NeuronNet implements Serializable {
 	private double [][][] weights;
 	public double [][] idealNeurons; 	// non-rectangle matrix!
 		
-	double [][] idealInputNeurones = {
+	public double [][] idealInputNeurones = {
 			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1}, //0
 			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0}, //1
 			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1}, //2
@@ -127,13 +127,14 @@ public class NeuronNet implements Serializable {
 		final double eta = 0.5;
 		double [][] neurons = new double[2][]; 		
 		double [][][] deltaW =	new double[weights.length][][];	
+		
 		CountIdealNeurons();
-		for(int n =0;n<iInLength;n++) {
+		for(int n =0;n<iInLength;n++) {									// input number
 			neurons[1] = idealInputNeurones[n].clone();
 			
-			for (int l=0;l<LAYERS-1;l++) { 		//layer
+			for (int l=0;l<LAYERS-1;l++) { 								//layer
 				neurons[0] = new double[neurons[1].length+1];
-				for(int b = 0; b<neurons[0].length-1; b++) {
+				for(int b = 0; b<neurons[1].length; b++) {
 					neurons[0][b] = neurons[1][b];
 				}
 				neurons[0][neurons[0].length-1] = 1.0;					// bias neuron for previous layer
@@ -213,20 +214,22 @@ public int takeDigit(double [] inNeurons) {
 	double [][] neurons = new double[2][]; 	
 	neurons[1] = inNeurons.clone();
 	
-	for (int l=1;l<LAYERS;l++) { 		//layer
-		neurons[0] = neurons[1].clone();
-		neurons[1] = new double [NEURONS_IN_LAYERS[l]];
-		neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l-1]);
+	for (int l=0;l<LAYERS-1;l++) { 								//layer
+		neurons[0] = new double[neurons[1].length+1];
+		for(int b = 0; b<neurons[1].length; b++) {
+			neurons[0][b] = neurons[1][b];
+		}
+		neurons[0][neurons[0].length-1] = 1.0;					// bias neuron for previous layer
+		neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l]);
 	}
-	
-	for (int i=1;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
+	for (int i=0;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
 		if(neurons[1][i]>bestRes) {
 			bestRes = neurons[1][i];
 			digit = i;
 		}	
 	}
 		return digit;
-	}
+}
 	
 	
 	public void selfLearning (int iteratons) {
@@ -245,14 +248,15 @@ public int takeDigit(double [] inNeurons) {
 					}
 				}
 			}
-			if(max<=0.2) {
-				System.out.println("Done "+ i +" iteration.");
+			if(max<=0.00529) {
+				System.out.println("Done "+ i +" iteration.  ");
+				System.out.println(max);
 				break;		
 			}
 		}
 		saveToF();
 		System.out.println("Saved to a file.");
-		System.out.println(max);
+		//System.out.println(max);
 	}
 
 }
