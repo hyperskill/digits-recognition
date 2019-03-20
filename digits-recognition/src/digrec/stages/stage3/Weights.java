@@ -13,7 +13,7 @@ public class Weights implements Serializable {
 
 	private static final long serialVersionUID = 328778L;
 	double [][] weights = new double [10][16];
-	
+	public double [][] deltaW;
 	public Weights() {
 		Random rd = new Random(328778L);
 		for (int i=0;i<10;i++) {
@@ -41,7 +41,7 @@ public class Weights implements Serializable {
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw.bin"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw3.bin"))) {
 			out.writeObject(this);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,7 +50,7 @@ public class Weights implements Serializable {
 	}
 	
 	public void loadFromF() {
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw.bin"))) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw3.bin"))) {
 			this.setWeights(((Weights)in.readObject()).getWeights());
 						
 		} catch (ClassNotFoundException|IOException e) {
@@ -74,7 +74,8 @@ public class Weights implements Serializable {
 			{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1}, //8
 			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1}  //9
 			};
-		double [][] deltaW = new double[10][16];
+		//double [][] deltaW = new double[10][16];
+		deltaW = new double[10][16];
 		double outNeuron;
 		
 		for(int n =0;n<10;n++) {
@@ -83,7 +84,8 @@ public class Weights implements Serializable {
 				for (int j = 0; j<16;j++){
 					outNeuron+= idealInputNeurones[n][j]*weights[i][j];
 				}
-				outNeuron = sigmoid(outNeuron);	
+				outNeuron = sigmoid(outNeuron);
+				
 				outNeuron = (i==n?1:0)- outNeuron;
 				for (int k = 0; k<16;k++){
 					deltaW[i][k] += nju*idealInputNeurones[n][k]*outNeuron;

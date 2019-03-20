@@ -21,8 +21,12 @@ public class NeuronNet implements Serializable {
 	private final int [] NEURONS_IN_LAYERS;
 	private double [][][] weights;
 	public double [][] idealNeurons; 	// non-rectangle matrix!
+	public double [][][] deltaW;	
+	
+	
+	
 		
-	double [][] idealInputNeurones = {
+	public double [][] idealInputNeurones = {
 			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1}, //0
 			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0}, //1
 			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1}, //2
@@ -104,7 +108,7 @@ public class NeuronNet implements Serializable {
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw.bin"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw4.bin"))) {
 			out.writeObject(this);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -113,7 +117,7 @@ public class NeuronNet implements Serializable {
 	}
 	
 	public void loadFromF() {
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw.bin"))) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw4.bin"))) {
 			this.setWeights(((NeuronNet)in.readObject()).getWeights());
 						
 		} catch (ClassNotFoundException|IOException e) {
@@ -126,22 +130,33 @@ public class NeuronNet implements Serializable {
 	public void learnNeuronNet() {
 		final double eta = 0.5;
 		double [][] neurons = new double[2][]; 		
-		double [][][] deltaW =	new double[weights.length][][];	
-		CountIdealNeurons();
-		for(int n =0;n<iInLength;n++) {
+		deltaW = new double[weights.length][][];	
+		
+		idealNeurons = new double [LAYERS-1][]; 	// non-rectangle matrix!
+		for (int l=0;l<LAYERS-1;l++) { 		//layer
+			idealNeurons[l] = new double [NEURONS_IN_LAYERS[l+1]];
+			deltaW[l] = new double[weights[l].length][];
+		}
+		if(LAYERS >2) {
+			CountIdealNeurons();
+		}
+		for(int n =0;n<iInLength;n++) {									// input number
 			neurons[1] = idealInputNeurones[n].clone();
-			
-			for (int l=0;l<LAYERS-1;l++) { 		//layer
+			for (int l=0;l<LAYERS-1;l++) { 								//layer
 				neurons[0] = new double[neurons[1].length+1];
-				for(int b = 0; b<neurons[0].length-1; b++) {
+				for(int b = 0; b<neurons[1].length; b++) {
 					neurons[0][b] = neurons[1][b];
 				}
 				neurons[0][neurons[0].length-1] = 1.0;					// bias neuron for previous layer
-				
 				neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l]);
-				deltaW[l] = new double[weights[l].length][];
+				
 				for(int i = 0;i<weights[l].length;i++) {
-					deltaW[l][i] = new double[weights[l][i].length];
+					if (deltaW[l][i] == null) {
+						deltaW[l][i] = new double[weights[l][i].length];
+					}
+					if (l ==LAYERS-2) {
+						idealNeurons[l][i] = (i==n?1:0);
+					}
 					for(int j = 0; j<weights[l][i].length; j++) {
 						deltaW[l][i][j] += eta*neurons[0][j]*(idealNeurons[l][i]-neurons[1][i]);
 					}
@@ -152,7 +167,7 @@ public class NeuronNet implements Serializable {
 		for (int l = 0;l<LAYERS-1;l++)	{
 			for (int v = 0;v<NEURONS_IN_LAYERS[l+1];v++)	{
 				for (int k = 0; k<NEURONS_IN_LAYERS[l];k++){
-					weights[l][v][k]+= deltaW[l][v][k] /NEURONS_IN_LAYERS[l+1];
+					weights[l][v][k]+= deltaW[l][v][k] /iInLength;
 				}
 				
 			}	
@@ -163,11 +178,7 @@ public class NeuronNet implements Serializable {
 	
 	
 	public void CountIdealNeurons() {
-		idealNeurons = new double [LAYERS-1][]; 	// non-rectangle matrix!
 		double iIL = 1/(double)iInLength;
-		for (int l=0;l<LAYERS-1;l++) { 		//layer
-			idealNeurons[l] = new double [NEURONS_IN_LAYERS[l+1]];
-		}
 		
 		for(int l = LAYERS-3;l>=0;l--) {									// layer
 			for(int n =0;n<iInLength;n++) {								// input number
@@ -178,16 +189,21 @@ public class NeuronNet implements Serializable {
 				}
 				for (int i=0;i<NEURONS_IN_LAYERS[l+1];i++) {
 					for (int j = 0; j<NEURONS_IN_LAYERS[l+2];j++){
-						if(idealNeurons[l+1][j]==0.0) {
+						/*if(idealNeurons[l+1][j]==0.0) {
 								continue;
-						}
+						}*/
 						idealNeurons[l][i] += idealNeurons[l+1][j]/weights[l+1][j][i];
 					}
+					
 				}
+				
 			}
 			for(int m = 0; m<idealNeurons[l].length; m++) {
 				idealNeurons[l][m] = idealNeurons[l][m]*iIL;
 				idealNeurons[l][m] = MatrixMath.Sigmoid(idealNeurons[l][m]);
+				
+				//idealNeurons[l][m] =(idealNeurons[l][m] < 0)?0:idealNeurons[l][m];
+				//idealNeurons[l][m] =(idealNeurons[l][m]>1?1:idealNeurons[l][m]);
 			}
 		}
 	}
@@ -213,20 +229,22 @@ public int takeDigit(double [] inNeurons) {
 	double [][] neurons = new double[2][]; 	
 	neurons[1] = inNeurons.clone();
 	
-	for (int l=1;l<LAYERS;l++) { 		//layer
-		neurons[0] = neurons[1].clone();
-		neurons[1] = new double [NEURONS_IN_LAYERS[l]];
-		neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l-1]);
+	for (int l=0;l<LAYERS-1;l++) { 								//layer
+		neurons[0] = new double[neurons[1].length+1];
+		for(int b = 0; b<neurons[1].length; b++) {
+			neurons[0][b] = neurons[1][b];
+		}
+		neurons[0][neurons[0].length-1] = 1.0;					// bias neuron for previous layer
+		neurons[1] = MatrixMath.ActivateNeuron(neurons[0], weights[l]);
 	}
-	
-	for (int i=1;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
+	for (int i=0;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
 		if(neurons[1][i]>bestRes) {
 			bestRes = neurons[1][i];
 			digit = i;
 		}	
 	}
 		return digit;
-	}
+}
 	
 	
 	public void selfLearning (int iteratons) {
@@ -245,10 +263,11 @@ public int takeDigit(double [] inNeurons) {
 					}
 				}
 			}
-			if(max<=0.2) {
-				System.out.println("Done "+ i +" iteration.");
-				break;		
-			}
+			//if(max<=0.02) {
+				//System.out.println("Done "+ i +" iteration.  ");
+				//System.out.println(max);
+				//break;		
+			//}
 		}
 		saveToF();
 		System.out.println("Saved to a file.");

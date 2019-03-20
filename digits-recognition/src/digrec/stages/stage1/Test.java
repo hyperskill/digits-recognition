@@ -9,7 +9,7 @@ public class Test {
 		
 		int [] neuWeight = {2,1,2,4,-4,4,2,-1,2,-5};
 		int a10 = 0; 	
-		System.out.println("enter matrix 9x9, where 1 is blue and 0 is white:");
+		System.out.println("enter matrix 3x3, where 1 is blue and 0 is white:");
 		for (int i=0;i<9;i++) {
 			a10	+= sc.nextInt()*neuWeight[i];
 		}
