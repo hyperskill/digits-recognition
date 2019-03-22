@@ -39,6 +39,7 @@ class Func implements Runnable {
 			
 		//}
 		//nn.learnNeuronNet();
+
 		nn.selfLearning(1000);
 		//nn.printArray(nn.getWeights());
 		//wts.selfLearning();
@@ -50,6 +51,7 @@ class Func implements Runnable {
 		nn.loadFromF();
 		
 		//System.out.println("It's a \"" + nn.takeDigit(nn.idealInputNeurones[0]) + "\".");
+
 		for(int u = 0; u<10;u++) {
 		System.out.println("It's a \"" + nn.takeDigit(nn.idealInputNeurones[u]) + "\".");
 		}

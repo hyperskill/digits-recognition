@@ -130,6 +130,7 @@ public class NeuronNet implements Serializable {
 	public void learnNeuronNet() {
 		final double eta = 0.5;
 		double [][] neurons = new double[2][]; 		
+
 		deltaW = new double[weights.length][][];	
 		
 		idealNeurons = new double [LAYERS-1][]; 	// non-rectangle matrix!
@@ -140,8 +141,10 @@ public class NeuronNet implements Serializable {
 		if(LAYERS >2) {
 			CountIdealNeurons();
 		}
+
 		for(int n =0;n<iInLength;n++) {									// input number
 			neurons[1] = idealInputNeurones[n].clone();
+
 			for (int l=0;l<LAYERS-1;l++) { 								//layer
 				neurons[0] = new double[neurons[1].length+1];
 				for(int b = 0; b<neurons[1].length; b++) {
@@ -263,11 +266,13 @@ public int takeDigit(double [] inNeurons) {
 					}
 				}
 			}
+
 			//if(max<=0.02) {
 				//System.out.println("Done "+ i +" iteration.  ");
 				//System.out.println(max);
 				//break;		
 			//}
+
 		}
 		saveToF();
 		System.out.println("Saved to a file.");
