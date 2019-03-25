@@ -32,7 +32,7 @@ class Func implements Runnable {
 
 	@Override
 	public void run() {
-		NeuronNet nn = new NeuronNet(15,4,10);//(15,3,4,10);
+		NeuronNet nn = new NeuronNet(15,10);//(15,3,4,10);
 		Weights wts = new Weights();
 		//nn.CountIdealNeurons();
 		//for(int i=0; i<10;i++) {

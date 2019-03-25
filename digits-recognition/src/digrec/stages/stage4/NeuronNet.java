@@ -183,9 +183,9 @@ public class NeuronNet implements Serializable {
 	public void CountIdealNeurons() {
 		double iIL = 1/(double)iInLength;
 		
-		for(int l = LAYERS-3;l>=0;l--) {									// layer
+		for(int l = LAYERS-3;l>=0;l--) {								// layer
 			for(int n =0;n<iInLength;n++) {								// input number
-				if(l == LAYERS-3) {								// only for the second to the last layer
+				if(l == LAYERS-3) {										// only for the second to the last layer
 					for(int ln = 0;ln<NEURONS_IN_LAYERS[LAYERS-1];ln++) { 
 						idealNeurons[LAYERS-2][ln] = (ln==n)?1:0;		// Ideal Output neurons
 					}
