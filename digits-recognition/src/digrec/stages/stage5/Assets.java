@@ -83,8 +83,10 @@ public class Assets implements Serializable {
 	public void loadFromF() {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
 			Assets as = (Assets)in.readObject();
+
 //TODO think about place of deserialization
 			//this.trainingSamples
+
 						
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
