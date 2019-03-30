@@ -37,18 +37,18 @@ class Func implements Runnable {
 
 	@Override
 	public void run() {
-		Assets newInput = new Assets();
+		//Assets newInput = new Assets();
 		
 		//newInput.fillTrainingSamples();
 		//newInput.getinputSample(7000*8+2);
-		newInput = newInput.loadFromF();
+		//newInput = newInput.loadFromF();
 		
-		for(int i = 0; i<785; i++) {
+		/*for(int i = 0; i<785; i++) {
 			System.out.print(newInput.trainingSamples[1009][i] + "\t");
 			if((i+1)%28==0 || i==784) {
 				System.out.println();
 			}
-		}
+		}*/
 		
 		//System.out.println(newInput.inputSample[784]);
 		
@@ -56,13 +56,13 @@ class Func implements Runnable {
 
 		
 		
-		//NeuronNet nn = new NeuronNet(15,10);//(15,3,4,10);
+		NeuronNet nn = new NeuronNet(784,10);//(15,3,4,10);
 		//Weights wts = new Weights();
 		//nn.CountIdealNeurons();
 		//for(int i=0; i<10;i++) {
 			
 		//}
-		//nn.learnNeuronNet();
+		nn.learnNeuronNet();
 
 		//nn.selfLearning(1000);
 		//nn.printArray(nn.getWeights());

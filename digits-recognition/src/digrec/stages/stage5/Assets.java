@@ -69,7 +69,7 @@ public class Assets implements Serializable {
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5.bin"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("base5.bin"))) {
 			out.writeObject(this);
 			System.out.println("Saved successfully.");
 		} catch (IOException e) {
@@ -79,7 +79,7 @@ public class Assets implements Serializable {
 	}
 	
 	public Assets loadFromF() {
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("base5.bin"))) {
 			Assets as = (Assets)in.readObject();
 			System.out.println("Loaded successfully.");	
 			return as;

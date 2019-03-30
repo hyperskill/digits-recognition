@@ -22,23 +22,11 @@ public class NeuronNet implements Serializable {
 	private double [][][] weights;
 	public double [][] idealNeurons; 	// non-rectangle matrix!
 	public double [][][] deltaW;	
-	
+	private int iInLength;
 	
 	
 		
-	public double [][] idealInputNeurones = {
-			{1,1,1,1,0,1,1,0,1,1,0,1,1,1,1}, //0
-			{0,1,0,0,1,0,0,1,0,0,1,0,0,1,0}, //1
-			{1,1,1,0,0,1,1,1,1,1,0,0,1,1,1}, //2
-			{1,1,1,0,0,1,1,1,1,0,0,1,1,1,1}, //3
-			{1,0,1,1,0,1,1,1,1,0,0,1,0,0,1}, //4
-			{1,1,1,1,0,0,1,1,1,0,0,1,1,1,1}, //5
-			{1,1,1,1,0,0,1,1,1,1,0,1,1,1,1}, //6
-			{1,1,1,0,0,1,0,0,1,0,0,1,0,0,1}, //7
-			{1,1,1,1,0,1,1,1,1,1,0,1,1,1,1}, //8
-			{1,1,1,1,0,1,1,1,1,0,0,1,1,1,1}  //9
-			};
-	int iInLength = idealInputNeurones.length;
+	
 	
 	
 	public NeuronNet() {
@@ -108,7 +96,7 @@ public class NeuronNet implements Serializable {
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw4.bin"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5.bin"))) {
 			out.writeObject(this);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -117,7 +105,7 @@ public class NeuronNet implements Serializable {
 	}
 	
 	public void loadFromF() {
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw4.bin"))) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
 			this.setWeights(((NeuronNet)in.readObject()).getWeights());
 						
 		} catch (ClassNotFoundException|IOException e) {
@@ -133,6 +121,12 @@ public class NeuronNet implements Serializable {
 
 		deltaW = new double[weights.length][][];	
 		
+		Assets as = new Assets();										// load input numbers
+		as = as.loadFromF();
+		int [][] inputNumbers = as.trainingSamples.clone();
+		iInLength = inputNumbers.length;
+		
+		
 		idealNeurons = new double [LAYERS-1][]; 	// non-rectangle matrix!
 		for (int l=0;l<LAYERS-1;l++) { 		//layer
 			idealNeurons[l] = new double [NEURONS_IN_LAYERS[l+1]];
@@ -141,10 +135,14 @@ public class NeuronNet implements Serializable {
 		if(LAYERS >2) {
 			CountIdealNeurons();
 		}
+		
+		
 
-		for(int n =0;n<iInLength;n++) {									// input number
-			neurons[1] = idealInputNeurones[n].clone();
-
+		for(int n =0;n<iInLength;n+=7000) {									// input numbers
+			neurons[1] = new double[NEURONS_IN_LAYERS[0]];
+			for(int m = 0; m<NEURONS_IN_LAYERS[0]; m++) {
+				neurons[1][m] = ((double)inputNumbers[n][m])/255;		// input neuron must be between 0 and 1
+			}
 			for (int l=0;l<LAYERS-1;l++) { 								//layer
 				neurons[0] = new double[neurons[1].length+1];
 				for(int b = 0; b<neurons[1].length; b++) {
