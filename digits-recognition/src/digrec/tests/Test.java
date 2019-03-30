@@ -2,7 +2,11 @@ package digrec.tests;
 
 
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -35,10 +39,12 @@ class Func implements Runnable {
 	public void run() {
 		Assets newInput = new Assets();
 		
-		newInput.fillTrainingSamples();
+		//newInput.fillTrainingSamples();
 		//newInput.getinputSample(7000*8+2);
+		newInput = newInput.loadFromF();
+		
 		for(int i = 0; i<785; i++) {
-			System.out.print(newInput.trainingSamples[69999][i] + "\t");
+			System.out.print(newInput.trainingSamples[1009][i] + "\t");
 			if((i+1)%28==0 || i==784) {
 				System.out.println();
 			}
@@ -47,7 +53,7 @@ class Func implements Runnable {
 		//System.out.println(newInput.inputSample[784]);
 		
 		
-		
+
 		
 		
 		//NeuronNet nn = new NeuronNet(15,10);//(15,3,4,10);
@@ -73,6 +79,29 @@ class Func implements Runnable {
 		//for(int u = 0; u<10;u++) {
 		//System.out.println("It's a \"" + nn.takeDigit(nn.idealInputNeurones[u]) + "\".");
 		//}
+		
+	}
+	
+	public void saveToF(Assets as) {
+		 
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5.bin"))) {
+			out.writeObject(as);
+			System.out.println("Saved successfully.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    
+	}
+	
+	public Assets loadFromF() {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
+			Assets as = (Assets)in.readObject();
+			System.out.println("Loaded successfully.");	
+			return as;
+		} catch (ClassNotFoundException|IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 		
 	}
 	

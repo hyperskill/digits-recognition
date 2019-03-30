@@ -20,10 +20,11 @@ import java.util.Scanner;
 public class Assets implements Serializable {
 	private static final long serialVersionUID = 328779L;
 	
-	private final Path ZIP_PATH = Paths.get("assets","data.zip"); 
+	private transient final Path ZIP_PATH = Paths.get("assets","data.zip"); 
 	public int[] inputSample = new int[785];
 	public int[][] trainingSamples = new int [70000][785];
 	private int n=-1;
+	
 	public void fillTrainingSamples () {
 		System.out.println("Reading...");
 		try(FileSystem zipFileSys = FileSystems.newFileSystem(ZIP_PATH, null)) {
@@ -38,18 +39,14 @@ public class Assets implements Serializable {
 							trainingSamples[n][i] = sc.nextInt();
 						}
 						sc.close();
-
-						
-						
 						return FileVisitResult.CONTINUE;
 					}
-					
-					
 				});
 			}
 		}catch(IOException ex) {
 			ex.printStackTrace();
 		}
+		saveToF();
 	}
 	
 	public void getinputSample (int fileNumber){
@@ -74,23 +71,24 @@ public class Assets implements Serializable {
 		 
 	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5.bin"))) {
 			out.writeObject(this);
+			System.out.println("Saved successfully.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	   // System.out.println("Saved successfully.");
+	    
 	}
 	
-	public void loadFromF() {
+	public Assets loadFromF() {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
 			Assets as = (Assets)in.readObject();
-
-//TODO think about place of deserialization
-			//this.trainingSamples
-
-						
+			System.out.println("Loaded successfully.");	
+			return as;
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
 		}
-		//System.out.println("Loaded successfully.");
+		return null;
+		
 	}
+	
+	
 }
