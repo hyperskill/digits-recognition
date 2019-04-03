@@ -102,12 +102,12 @@ public class Assets implements Serializable {
 	
 	public double [][] createTraningSet(int countOfNumberSamples, int startIndex){
 		double [][] trainingSet = new double [countOfNumberSamples*10][785];
-		int depthNumber = countOfNumberSamples+startIndex;
-		for (int d = 0, t=0; d<10;d++) {		
+		for (int d = 0, t=0; d<10;d++) {
+			int depthNumber = countOfNumberSamples+startIndex;
 			for(int n = startIndex; n<depthNumber;n++,t++) {
 				if((depthNumber>this.trainingSamples[d].length) && (n >= this.trainingSamples[d].length-1)) {
+					depthNumber = depthNumber-n;
 					n=0;
-					depthNumber -= this.trainingSamples[d].length;
 				}
 				for(int i = 0; i<784; i++) {
 					trainingSet[t][i] = ((double)this.trainingSamples[d][n][i])/255;		// input neuron must be between 0 and 1
