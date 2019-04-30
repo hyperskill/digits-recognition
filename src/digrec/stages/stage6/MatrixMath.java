@@ -1,4 +1,4 @@
-package digrec.stages.stage5;
+package digrec.stages.stage6;
 
 /**
  * There are necessary matrix mathematics calculations for the project.  
@@ -32,6 +32,7 @@ public final class MatrixMath {
 			}
 			resVec[i] = sigmoid(resVec[i]);
 		}
+		
 		return resVec;
 		
 	}
