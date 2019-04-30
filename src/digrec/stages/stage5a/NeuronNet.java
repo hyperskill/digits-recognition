@@ -1,4 +1,4 @@
-package digrec.stages.stage5;
+package digrec.stages.stage5a;
 
 import java.io.FileInputStream;
 
@@ -21,7 +21,7 @@ public class NeuronNet implements Serializable {
 	private final int [] NEURONS_IN_LAYERS;
 	private double [][][] weights;
 	public double [][][] deltaW;	
-	public double [][][] idealNeurons; 	// non-rectangle matrix!
+	public double [][] idealNeurons; 	// non-rectangle matrix!
 	public double [][] inputNumbers;
 	public int iInLength;
 	private double [][] neurons;	
@@ -53,15 +53,14 @@ public class NeuronNet implements Serializable {
 		NEURONS_IN_LAYERS = neuronsInLayers.clone();
 		weights = new double [LAYERS-1][][];
 		deltaW = new double [LAYERS-1][][];
-		idealNeurons = new double [10][LAYERS-1][]; 					// non-rectangle matrix!
+		idealNeurons = new double [LAYERS-1][]; 					// non-rectangle matrix!
 		neurons = new double[2][];
 		Random rd = new Random(328778L);
 		for (int l=0;l<(LAYERS-1);l++) {
 			weights[l] = new double[NEURONS_IN_LAYERS[l+1]][];
 			deltaW[l] = new double[NEURONS_IN_LAYERS[l+1]][];
-			for (int n=0;n<10;n++) {
-				idealNeurons[n][l] = new double [NEURONS_IN_LAYERS[l+1]];
-			}
+			idealNeurons[l] = new double [NEURONS_IN_LAYERS[l+1]];
+			
 			for (int i=0;i<NEURONS_IN_LAYERS[l+1];i++) {
 				weights[l][i] = new double[NEURONS_IN_LAYERS[l]+1];
 				deltaW[l][i] = new double[NEURONS_IN_LAYERS[l]+1];
@@ -106,7 +105,7 @@ public class NeuronNet implements Serializable {
 	
 	public void saveToF() {
 		 
-	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5.bin"))) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("nnw5a.bin"))) {
 			out.writeObject(this);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -114,13 +113,15 @@ public class NeuronNet implements Serializable {
 	   // System.out.println("Saved successfully.");
 	}
 	
-	public void loadFromF() {
-		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5.bin"))) {
-			this.setWeights(((NeuronNet)in.readObject()).getWeights());
-						
+	public double [][] loadFromF() {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5a.bin"))) {
+			NeuronNet net = (NeuronNet)in.readObject();
+			this.setWeights(net.getWeights());
+			return net.idealNeurons;			
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 		//System.out.println("Loaded successfully.");
 	}
 	
@@ -134,14 +135,13 @@ public class NeuronNet implements Serializable {
 	public void learnNeuronNet(double eta) {
 		 
 		int idealNumber;
-		countIdealNeurons();
-		
 		
 		for(int n =0;n<iInLength;n++) {									// input numbers
 			idealNumber = takeInNeurons(inputNumbers[n]);
+			countIdealNeurons(idealNumber);
 			for (int l=0;l<LAYERS-1;l++) { 								//layer
 				activateNeurons(inputNumbers[n],l);
-				countDeltaW(neurons,eta,idealNeurons[idealNumber][l],l);
+				countDeltaW(neurons,eta,idealNeurons[l],l);
 				
 			}
 		}	
@@ -185,30 +185,21 @@ public class NeuronNet implements Serializable {
 		}	
 	}
 		
-	public void countIdealNeurons() {
-		int idealNumber;
-		for(int n =0;n<10;n++) {					// ideal output neurons (last layer)
-			idealNeurons[n][LAYERS-2][n] = 1.0;		
-		}
+	public void countIdealNeurons(int idealNumber) {
+							// ideal output neurons (last layer)
+		for (int out = 0; out<10;out++) {
+			idealNeurons[LAYERS-2][out] = out==idealNumber?1.0:0.0;		
+		}	
 		if(LAYERS>2) {
 			for(int l = LAYERS-3;l>=0;l--) {								// layer
 				for(int n =0;n<iInLength;n++) {								// input number
 					idealNumber = (int)inputNumbers[n][784];
 					for (int i=0;i<NEURONS_IN_LAYERS[l+1];i++) {
 						for (int j = 0; j<NEURONS_IN_LAYERS[l+2];j++){
-							idealNeurons[idealNumber][l][i] += idealNeurons[idealNumber][l+1][j]/weights[l+1][j][i];
+							idealNeurons[l][i] += idealNeurons[l+1][j]/weights[l+1][j][i];
+							
 						}
-					}
-				}
-				
-				for (int n = 0; n<10;n++) {
-					
-					for(int m = 0; m<NEURONS_IN_LAYERS[l+1]; m++) {
-						idealNeurons[n][l][m] = idealNeurons[n][l][m]*10/iInLength;
-						idealNeurons[n][l][m] = MatrixMath.sigmoid(idealNeurons[n][l][m]);
-						
-						//idealNeurons[n][l][m] =(idealNeurons[n][l][m] < 0)?0:idealNeurons[n][l][m];
-						//idealNeurons[n][l][m] =(idealNeurons[n][l][m]>1?1:idealNeurons[n][l][m]);
+						MatrixMath.sigmoid(idealNeurons[l][i]);
 					}
 				}
 			}

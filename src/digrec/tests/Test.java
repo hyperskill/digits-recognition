@@ -9,11 +9,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Level;
 
 import digrec.stages.stage3.Weights;
-import digrec.stages.stage5.MatrixMath;
-import digrec.stages.stage5.NeuronNet;
-import digrec.stages.stage5.Assets;
+import digrec.stages.stage6.MatrixMath;
+import digrec.stages.stage6.NeuronNet;
+import digrec.stages.stage6.Assets;
 public class Test  {
 
 		  
@@ -56,15 +57,18 @@ class Func implements Runnable {
 
 		
 		
-		NeuronNet nn = new NeuronNet(784,10);//(15,3,4,10);
+		NeuronNet nn = new NeuronNet (784,15,15,10);//(15,3,4,10);
 		//Weights wts = new Weights();
 		//nn.CountIdealNeurons();
 		//for(int i=0; i<10;i++) {
-			
+		//System.out.println(nn.getWeights().length + "\t"+nn.getWeights()[0].length+ "\t"+nn.getWeights()[0][0].length);	
 		//}
-		nn.learnNeuronNet();
+		/*nn.loadInputNumbers(1, 5);
+		nn.learnNeuronNet(0.5);*/
 
-		//nn.selfLearning(100);
+		//nn.selfLearning();
+		//nn.selfLearning(100,6000,0);
+		
 		//nn.printArray(nn.getWeights());
 		//wts.selfLearning();
 		//wts.learnNeuNet();
@@ -72,10 +76,17 @@ class Func implements Runnable {
 		//System.out.println();
 		//nn.selfLearning(100);
 		//nn.printArray(nn.getWeights());
-		//nn.loadFromF();
 		
-		//System.out.println("The number \"" +nn.inputNumbers[0][784] + "\" is \"" + nn.takeDigit(nn.inputNumbers[0]) + "\".");
-
+		nn = NeuronNet.loadFromF();
+		nn.loadInputNumbers(1000, 60001);
+		int i=0;
+		for(int u = 0; u<10000;u++) {
+			if((int)nn.inputNumbers[u][784]==nn.getDigit(nn.inputNumbers[u])) {
+				i++;
+			}
+			//System.out.println("The number \"" +nn.inputNumbers[u][784] + "\" is \"" + nn.takeDigit(nn.inputNumbers[u]) + "\".");
+		}
+		System.out.println((double)i/100 + "%");
 		//for(int u = 0; u<10;u++) {
 		//System.out.println("It's a \"" + nn.takeDigit(nn.idealInputNeurones[u]) + "\".");
 		//}
