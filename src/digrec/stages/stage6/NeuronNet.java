@@ -98,21 +98,6 @@ public class NeuronNet implements Serializable {
 		}
 		return wts;
 	}
-
-	/**
-	 *	Method don't change the array passed as an argument.
-	 * @param weights double [][][] array isn't changing in method 
-	 */
-	private void setWeights(double[][][] weights) {
-		int l;
-		for(int i = 0;i<LAYERS-1;i++) {
-			l = weights[i].length;
-			this.weights[i]= new double [l][];
-			for(int j = 0;j<l;j++) {
-				this.weights[i][j] = weights[i][j].clone();
-			}
-		}
-	}
 	
 	public void saveToF() {
 		 
@@ -128,7 +113,6 @@ public class NeuronNet implements Serializable {
 	public static NeuronNet loadFromF() {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5a.bin"))) {
 			NeuronNet net = (NeuronNet)in.readObject();
-			//this.setWeights(net.getWeights());
 			LOGGER.fine("Loaded successfully.");
 			return net;			
 		} catch (ClassNotFoundException|IOException e) {
