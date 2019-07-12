@@ -23,15 +23,17 @@ import java.util.logging.Logger;
 public class NeuronNet implements Serializable {
 
 	private static final long serialVersionUID = 328778L;
-	private final int LAYERS;
+	final int LAYERS;
 	private final int [] NEURONS_IN_LAYERS;
 	private double [][][] weights;
-	public double [][][] deltaW;	// non-rectangle matrix!
+	public double [][][] deltaW;	// non-rectangle matrix
 	public double [][] inputNumbers;
 	public int iInLength;
 	private double [][] neurons;	
+	private double currErr;
 	protected static final Logger LOGGER = Logger.getLogger(NeuronNet.class.getName());
-	
+
+	static Handler handler = new ConsoleHandler();
 	
 	
 	public NeuronNet() {
@@ -69,14 +71,13 @@ public class NeuronNet implements Serializable {
 				}
 			}
 		}
-		Handler handler = new ConsoleHandler();
 		handler.setLevel(logLevel);
 		LOGGER.addHandler(handler);
 		LOGGER.setLevel(logLevel);
 	}
 	
 	public NeuronNet(int... neuronsInLayers) {
-		this(Level.ALL, neuronsInLayers);
+		this(Level.CONFIG, neuronsInLayers);
 	}
 
 	
@@ -97,21 +98,6 @@ public class NeuronNet implements Serializable {
 		}
 		return wts;
 	}
-
-	/**
-	 *	Method don't change the array passed as an argument.
-	 * @param weights double [][][] array isn't changing in method 
-	 */
-	public void setWeights(double[][][] weights) {
-		int l;
-		for(int i = 0;i<LAYERS-1;i++) {
-			l = weights[i].length;
-			this.weights[i]= new double [l][];
-			for(int j = 0;j<l;j++) {
-				this.weights[i][j] = weights[i][j].clone();
-			}
-		}
-	}
 	
 	public void saveToF() {
 		 
@@ -124,15 +110,15 @@ public class NeuronNet implements Serializable {
 	    
 	}
 	
-	public void loadFromF() {
+	public static NeuronNet loadFromF() {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("nnw5a.bin"))) {
 			NeuronNet net = (NeuronNet)in.readObject();
-			this.setWeights(net.getWeights());
 			LOGGER.fine("Loaded successfully.");
-						
+			return net;			
 		} catch (ClassNotFoundException|IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 		
 	}
 	
@@ -145,6 +131,15 @@ public class NeuronNet implements Serializable {
 	
 	public void learnNeuronNet(double eta) {
 				
+	}
+	
+	public double[] computeOut(double[] inputNumber) { 		
+		double[] output;
+		output = Arrays.copyOf(inputNumber,inputNumber.length-1);
+		for(int l = 0; l<LAYERS-1; l++) {								//for each level
+			output = MatrixMath.activateNeuron(output, weights[l]);
+		}
+		return output;
 	}
 	
 	public int straightPropagation(double[] inputNumber) {
@@ -162,11 +157,11 @@ public class NeuronNet implements Serializable {
 	
 	public void backPropagation(int idealNumber, double eta, double lambda) {
 		double [][] error = new double [2][]; 
-		
 		//last layer LAYERS-1
 		error[0] = new double[NEURONS_IN_LAYERS[LAYERS-1]];
 		for (int out = 0; out<NEURONS_IN_LAYERS[LAYERS-1];out++) {
 			error[0][out] = out==idealNumber?(neurons[LAYERS-1][out]-1.0):(neurons[LAYERS-1][out]);
+			currErr += error[0][out]*error[0][out]*0.5;
 			error[0][out]*=neurons[LAYERS-1][out]*(1-neurons[LAYERS-1][out]);
 		
 			for (int i = 0;i<weights[LAYERS-2][0].length;i++) {
@@ -194,27 +189,16 @@ public class NeuronNet implements Serializable {
 		}
 		
 	}
-	
-	
-	
-	
-
-	
-	private void recountWeights() {
+		
+	private void recountWeights(int batchSize) {
 		for (int l=0;l<(weights.length);l++) {
 			for (int m=0;m<(weights[l].length);m++) {
 				for (int n=0;n<(weights[l][m].length);n++) {
-					weights[l][m][n] += deltaW[l][m][n];
+					weights[l][m][n] += deltaW[l][m][n]/batchSize;
 				}
 			}
 		}
 	}
-	
-	private void countDeltaW(double [][] neurons, double eta, double[] idealNeurons,int layer) {
-		
-	}
-		
-
 
 public void printArray(double [][] array) {
 	String a = Arrays.deepToString(array);
@@ -231,14 +215,14 @@ public void printArray(double [][][] array) {
 	System.out.println();
 }
 	
-public int takeDigit(double [] inNeurons) {
+public int getDigit(double [] inNeurons) {
 	int digit = -1;
 	double bestRes = -1000.0;
 	straightPropagation(inNeurons);
 		
 	for (int i=0;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
-		if(neurons[1][i]>bestRes) {
-			bestRes = neurons[1][i];
+		if(neurons[LAYERS-1][i]>bestRes) {
+			bestRes = neurons[LAYERS-1][i];
 			digit = i;
 		}	
 	}
@@ -248,9 +232,11 @@ public int takeDigit(double [] inNeurons) {
 	
 public void selfLearning (int numberOfTranigSets,int ofset, int epoches, 
 							double eta, int batchSize, double lambda, double minErr, double minDErr ) {
-	double currErr = Short.MAX_VALUE;
+	//double currErr = Short.MAX_VALUE;
 	double lastErr = 0;
+	double dErr = 0;
 	int epochN = 0;
+	int trueRes;
 	LOGGER.fine("Learning...");
 	loadInputNumbers(numberOfTranigSets, ofset);
 	List<double[]> iNums = Arrays.asList(inputNumbers);
@@ -261,6 +247,9 @@ public void selfLearning (int numberOfTranigSets,int ofset, int epoches,
 	
 	do {																//epoch cycle
 		lastErr = currErr;
+		double reg = 0;
+		currErr = 0;
+		trueRes = 0;
 		Collections.shuffle(iNums);
 		for(int b = 0; b<(iInLength+batchSize); b+=batchSize) {		//batches iterations in input numbers set
 			
@@ -280,25 +269,21 @@ public void selfLearning (int numberOfTranigSets,int ofset, int epoches,
 			}
 			
 			// recount weights
-			recountWeights();
+			recountWeights(batchSize);
 		}
 		
 		//error block
+		for(int i = 0; i<iNums.size(); i++) {
+			if(iNums.get(i)[iNums.get(i).length-1]== getDigit(iNums.get(i))){
+				trueRes++;
+			};
+		}
+		
 		
 		//real error
-		currErr = 0;
-		int idealNumber;
-		for (int n=0;n<(iNums.size());n++) {
-			idealNumber = straightPropagation(inputNumbers[n]);
-			for (int i=0;i<NEURONS_IN_LAYERS[LAYERS-1];i++) {
-				double out = i==idealNumber?(1.0-neurons[LAYERS-1][i]):(-neurons[LAYERS-1][i]);
-				currErr += out*out*0.5 ;
-			}
-		}
 		currErr /= iNums.size();
 		
 		//error regularization
-		double reg = 0;
 		if(Math.abs(lambda)>Float.MIN_VALUE) {
 			for (int l=0;l<(weights.length);l++) {
 				for (int m=0;m<(weights[l].length);m++) {
@@ -311,16 +296,18 @@ public void selfLearning (int numberOfTranigSets,int ofset, int epoches,
 		}
 		
 		epochN++;
-		LOGGER.log(Level.INFO,"Epoch # {0} finished; current error is {1}.", new Object[]{epochN,currErr});
-	}while(epochN<epoches && currErr>minErr && Math.abs(currErr-lastErr)>minDErr);
+		dErr = Math.abs(currErr-lastErr);
+		double procent = (double)trueRes*100/iNums.size();
+		LOGGER.log(Level.FINE,"Epoch # {0}; current error = {1}; delta error = {2}; reconation = {3}%", new Object[]{epochN,currErr, dErr,procent});
+	}while(epochN<epoches && currErr>minErr && dErr>=minDErr);
 	
-	//saveToF();
+	saveToF();
 	LOGGER.fine("Saved to a file.");
 		
 }
 
 public void selfLearning () {
-	selfLearning (1000, 0, 10, 0.5,-1, 0, 0.005, 0.000005);
+	selfLearning (1000, 0, 100, 0.5, 10, 0.15, 0, 0);
 }
 
 }
