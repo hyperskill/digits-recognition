@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compiled class file
 *.class
 
@@ -21,3 +22,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+=======
+/base5.bin
+/base5a.bin
+/base6.bin
+/nnw5.bin
+/nnw5a.bin
+>>>>>>> refs/heads/lastStage
+/src/

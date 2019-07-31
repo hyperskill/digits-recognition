@@ -3,6 +3,7 @@
 	<name>digits-recognition</name>
 	<comment></comment>
 	<projects>
+<<<<<<< HEAD
 		<project>Digits Recognition</project>
 	</projects>
 	<buildSpec>
@@ -22,3 +23,17 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>
+=======
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+</projectDescription>
+>>>>>>> refs/heads/lastStage
